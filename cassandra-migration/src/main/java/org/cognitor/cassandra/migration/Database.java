@@ -174,7 +174,16 @@ public class Database implements Closeable {
      * @param migration
      */
     public void updateMigration(DbMigration migration) {
-        if (migration.getVersion() > getVersion()) {
+        updateMigration(migration, false);
+    }
+
+    /**
+     * This method can be used to update the existing migrations. Only the script name,
+     * the script content and the
+     * @param migration
+     */
+    public void updateMigration(DbMigration migration, boolean skipValidation) {
+        if (!skipValidation && migration.getVersion() > getVersion()) {
             throw new IllegalArgumentException("Given migration was never executed and is not stored.");
         }
         try {

@@ -41,10 +41,15 @@ public class CalulateChecksumTask implements Task {
     @Override
     public void execute() {
         final List<DbMigration> migrations = getMigrationsToRecalculate();
-        migrations.forEach(database::updateMigration);
+        migrations.forEach(this::updateMigration);
     }
 
     List<DbMigration> getMigrationsToRecalculate() {
         return database.loadMigrations();
+    }
+
+    private void updateMigration(DbMigration m) {
+        m.updateChecksum();
+        database.updateMigration(m, true);
     }
 }
