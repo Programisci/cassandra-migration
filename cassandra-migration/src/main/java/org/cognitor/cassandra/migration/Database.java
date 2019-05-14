@@ -3,6 +3,7 @@ package org.cognitor.cassandra.migration;
 import com.datastax.driver.core.*;
 import org.cognitor.cassandra.migration.cql.SimpleCQLLexer;
 import org.cognitor.cassandra.migration.keyspace.KeyspaceDefinition;
+import org.cognitor.cassandra.migration.tasks.CalulateChecksumTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,6 +129,12 @@ public class Database implements Closeable {
     private void addChecksumColumnToMigrationTable() {
         LOGGER.info("Adding checksum column to schema migration column family.");
         session.execute(format(ADD_COLUMN, SCHEMA_CF, CHECKSUM_COLUMN_NAME, "bigint"));
+        calculateChecksums();
+    }
+
+    private void calculateChecksums() {
+        final CalulateChecksumTask calulateChecksumTask = new CalulateChecksumTask(this);
+        calulateChecksumTask.execute();
     }
 
     private boolean schemaTableHasNoChecksumColumn() {
