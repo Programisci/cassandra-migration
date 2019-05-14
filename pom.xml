@@ -36,12 +36,12 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>gls-nexus-snapshots</id>
+            <url>http://172.17.106.5:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+            <id>gls-nexus-releases</id>
+            <url>http://172.17.106.5:8081/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
