@@ -30,7 +30,7 @@ public class DbMigration {
         this.migrationScript = notNull(migrationScript, "migrationScript");
         this.scriptName = notNullOrEmpty(scriptName, "scriptName");
         this.version = version;
-        this.crc32Checksum = calculateCRC32();
+        updateChecksum();
     }
 
     /**
@@ -78,6 +78,10 @@ public class DbMigration {
      */
     public long getChecksum() {
         return this.crc32Checksum;
+    }
+
+    public void updateChecksum(){
+        this.crc32Checksum = calculateCRC32();
     }
 
     /**
