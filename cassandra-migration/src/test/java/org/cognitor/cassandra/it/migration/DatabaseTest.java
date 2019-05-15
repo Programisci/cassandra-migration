@@ -9,12 +9,14 @@ import org.cognitor.cassandra.migration.keyspace.NetworkStrategy;
 import org.cognitor.cassandra.migration.tasks.KeyspaceCreationTask;
 import org.cognitor.cassandra.migration.tasks.TaskChain;
 import org.cognitor.cassandra.migration.tasks.TaskChainBuilder;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.cognitor.cassandra.CassandraJUnitRule.DEFAULT_SCRIPT_LOCATION;
@@ -164,6 +166,24 @@ public class DatabaseTest {
         assertThat(updatedMigrations.get(0).getLong("checksum"), is(not(equalTo(originalInitMigration.get().getLong("checksum")))));
     }
 
+    @Test
+    public void shouldFillChecksumColumnWhenItsBeingAdded() {
+        TaskChain migration = buildTaskChain("cassandra/migrationtest/successful");
+        migration.execute();
+
+        final List<Long> checksums = loadMigrations().stream().map(row -> row.getLong("checksum")).collect(toList());
+
+        assertThat(getSession().execute("ALTER TABLE schema_migration DROP checksum").wasApplied(), Matchers.is(true));
+
+        // after migration the database object is closed
+        database = new Database(cassandra.getCluster(), new Configuration(CassandraJUnitRule.TEST_KEYSPACE));
+
+        List<DbMigration> updatedMigrations = database.loadMigrations();
+        for(int i=0; i<checksums.size(); ++i) {
+            assertThat(updatedMigrations.get(i).getChecksum(), is(equalTo(checksums.get(i))));
+        }
+    }
+
     private TaskChain buildTaskChain(String s) {
         return new TaskChainBuilder(cassandra.getCluster(),
                 new Configuration(CassandraJUnitRule.TEST_KEYSPACE).setMigrationLocation(s))
@@ -171,8 +191,12 @@ public class DatabaseTest {
     }
 
     private List<Row> loadMigrations() {
-        Session session = cassandra.getCluster().connect(CassandraJUnitRule.TEST_KEYSPACE);
+        Session session = getSession();
         ResultSet resultSet = session.execute(new SimpleStatement("SELECT * FROM schema_migration;"));
         return resultSet.all();
+    }
+
+    private Session getSession() {
+        return cassandra.getCluster().connect(CassandraJUnitRule.TEST_KEYSPACE);
     }
 }

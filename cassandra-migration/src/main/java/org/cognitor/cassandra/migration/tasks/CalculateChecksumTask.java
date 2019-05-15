@@ -24,7 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  *
  * @author Patrick Kranz
  */
-public class CalulateChecksumTask implements Task {
+public class CalculateChecksumTask implements Task {
     private static final Logger LOGGER = getLogger(MigrationTask.class);
 
     private final Database database;
@@ -34,7 +34,7 @@ public class CalulateChecksumTask implements Task {
      *
      * @param database   the database that should was migrated with the scripts in the repository
      */
-    public CalulateChecksumTask(Database database) {
+    public CalculateChecksumTask(Database database) {
         this.database = database;
     }
 
@@ -50,6 +50,6 @@ public class CalulateChecksumTask implements Task {
 
     private void updateMigration(DbMigration m) {
         m.updateChecksum();
-        database.updateMigration(m, true);
+        database.updateMigration(m);
     }
 }
