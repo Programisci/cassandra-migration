@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.cognitor.cassandra</groupId>
         <artifactId>cassandra-migration-parent</artifactId>
-        <version>3.0.1-programisci</version>
+        <version>3.0.2-programisci</version>
     </parent>
 
     <artifactId>cassandra-migration</artifactId>
-    <version>3.0.1-programisci</version>
+    <version>3.0.2-programisci</version>
     <packaging>jar</packaging>
     <name>Cassandra Migration</name>
     <url>https://github.com/patka/cassandra-migration</url>

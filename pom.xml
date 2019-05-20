@@ -4,7 +4,7 @@
 
     <groupId>org.cognitor.cassandra</groupId>
     <artifactId>cassandra-migration-parent</artifactId>
-    <version>3.0.1-programisci</version>
+    <version>3.0.2-programisci</version>
     <packaging>pom</packaging>
     <name>Cassandra Migration Parent</name>
     <url>https://github.com/patka/cassandra-migration</url>
@@ -75,7 +75,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>21.0</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

@@ -50,7 +50,7 @@ public class ChecksumValidationTask implements Task {
     public void execute() {
         List<DbMigration> persistentMigrations = database.loadMigrations();
         List<DbMigration> repositoryMigrations = repository.getMigrationsSinceVersion(0);
-        LOGGER.info("About to validate the checksums of %s migrations", repositoryMigrations.size());
+        LOGGER.info("About to validate the checksums of {} migrations", repositoryMigrations.size());
 
         ValidationResult result = new ValidationResult();
         if (repositoryMigrations.size() < persistentMigrations.size()) {

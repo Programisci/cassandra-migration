@@ -9,8 +9,10 @@ import org.cognitor.cassandra.migration.keyspace.KeyspaceDefinition;
 import org.cognitor.cassandra.migration.scanner.ScannerRegistry;
 import org.cognitor.cassandra.migration.spring.health.MigrationStatus;
 import org.cognitor.cassandra.migration.spring.scanner.SpringBootLocationScanner;
+import org.cognitor.cassandra.migration.tasks.MigrationTask;
 import org.cognitor.cassandra.migration.tasks.TaskChain;
 import org.cognitor.cassandra.migration.tasks.TaskChainBuilder;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -23,6 +25,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
  * @author Patrick Kranz
  */
@@ -31,6 +35,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(CassandraAutoConfiguration.class)
 @ConditionalOnClass(Cluster.class)
 public class CassandraMigrationAutoConfiguration {
+    private static final Logger LOGGER = getLogger(MigrationTask.class);
+
     private final CassandraMigrationConfigurationProperties properties;
     private final Cluster cluster;
 
@@ -44,6 +50,7 @@ public class CassandraMigrationAutoConfiguration {
     @ConditionalOnBean(Cluster.class)
     @ConditionalOnMissingBean(TaskChain.class)
     public TaskChain migrationProcess() {
+        LOGGER.debug("Creating migration process");
         if (properties.isEnabled()) {
             return createMigrationTaskChain();
         } else {
@@ -52,10 +59,12 @@ public class CassandraMigrationAutoConfiguration {
     }
 
     private TaskChain createEmptyTaskChain() {
+        LOGGER.debug("Creating emptyTaskChain");
         return new TaskChain();
     }
 
     private TaskChain createMigrationTaskChain() {
+        LOGGER.debug("Creating migration task chain");
         return new TaskChainBuilder(cluster,
                 migrationConfiguration(),
                 migrationRepository())
@@ -64,6 +73,7 @@ public class CassandraMigrationAutoConfiguration {
 
     @Bean
     org.cognitor.cassandra.migration.Configuration migrationConfiguration() {
+        LOGGER.debug("Creating migration configuration");
         if (!properties.hasKeyspaceName()) {
             throw new IllegalStateException("Please specify ['cassandra.migration.keyspace-name'] in" +
                     " order to migrate your database");
@@ -80,12 +90,14 @@ public class CassandraMigrationAutoConfiguration {
 
     @Bean
     Database migrationDatabase(){
+        LOGGER.debug("Creating migrationDatabase");
         return new Database(cluster, migrationConfiguration());
     }
 
     @ConditionalOnMissingBean(MigrationRepository.class)
     @Bean
     MigrationRepository migrationRepository() {
+        LOGGER.debug("Creating migrationRepository");
         ScannerRegistry registry = new ScannerRegistry();
         registry.register(ScannerRegistry.JAR_SCHEME, new SpringBootLocationScanner());
         if (properties.getStrategy() == ScriptCollectorStrategy.FAIL_ON_DUPLICATES) {
@@ -97,6 +109,7 @@ public class CassandraMigrationAutoConfiguration {
     @ConditionalOnClass(HealthIndicator.class)
     @Bean
     MigrationStatus migrationStatus() {
+        LOGGER.debug("Creating migrationStatus");
         return new MigrationStatus(migrationRepository(), migrationDatabase());
     }
 }

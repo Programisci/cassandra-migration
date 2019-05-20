@@ -7,14 +7,18 @@ import org.cognitor.cassandra.migration.scanner.LocationScanner;
 import org.cognitor.cassandra.migration.scanner.ScannerRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -265,14 +269,12 @@ public class MigrationRepository {
     }
 
     private String readResourceFileAsString(String resourceName, ClassLoader classLoader) throws IOException {
-        try {
-            final URL resource = classLoader.getResource(resourceName);
-            if (resource == null) {
-                throw new IOException(String.format("Unable to find resource '%s", resourceName));
-            }
-            return new String(readAllBytes(get(resource.toURI())), SCRIPT_ENCODING);
-        } catch (URISyntaxException exception) {
-            throw new IOException(format("Unable to read resource '%s'", resourceName), exception);
+        LOGGER.debug("Reading resource as string: {}", resourceName);
+        try(final InputStream inputStream = classLoader.getResourceAsStream(resourceName)) {
+            return new String(ByteStreams.toByteArray(inputStream), SCRIPT_ENCODING);
+        } catch (Exception ie) {
+            LOGGER.debug("Caught exception while trying to read resource", ie);
+            throw ie;
         }
     }
 }
