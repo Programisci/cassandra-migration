@@ -180,12 +180,12 @@ public class MigrationRepository {
                     int version = extractScriptVersion(scriptName);
                     scriptCollector.collect(new ScriptFile(version, resource, scriptName));
                 } else {
-                    LOGGER.warn(format("Ignoring file %s because it is not a cql file.", resource));
+                    LOGGER.warn("Ignoring file {} because it is not a cql file.", resource);
                 }
             }
         }
         List<ScriptFile> scripts = new ArrayList<>(scriptCollector.getScriptFiles());
-        LOGGER.info(format("Found %d migration scripts", scripts.size()));
+        LOGGER.info("Found {} migration scripts", scripts.size());
         sort(scripts);
         return scripts;
     }

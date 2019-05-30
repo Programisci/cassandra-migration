@@ -32,7 +32,10 @@ public class DefaultStatementResultHandler implements StatementResultHandler {
     @Override
     public void handleError(StatementResult result, DbMigration migration) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Handling error for statement '%s'", result.getStatement());
+            LOGGER.debug("Handling error for statement '{}'", result.getStatement());
+        }
+        if(result.getException() != null) {
+            LOGGER.warn("Exception occurred while executing statement", result.getException());
         }
         if (!result.isAgreementReached()) {
             String errorMessage = format(NO_AGREEMENT_REACHED_MSG,
@@ -51,7 +54,7 @@ public class DefaultStatementResultHandler implements StatementResultHandler {
     @Override
     public void handleSuccess(StatementResult result, DbMigration migration) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Successfully executed statement '%s'", result.getStatement());
+            LOGGER.debug("Successfully executed statement '{}'", result.getStatement());
         }
     }
 }

@@ -49,14 +49,14 @@ public class MigrationTask implements Task {
     @Override
     public void execute() {
         if (databaseIsUpToDate()) {
-            LOGGER.info(format("Keyspace %s is already up to date at version %d", database.getKeyspaceName(),
-                    database.getVersion()));
+            LOGGER.info("Keyspace {} is already up to date at version {}", database.getKeyspaceName(),
+                    database.getVersion());
             return;
         }
 
         List<DbMigration> migrations = repository.getMigrationsSinceVersion(database.getVersion() + 1);
         migrations.forEach(database::execute);
-        LOGGER.info(format("Migrated keyspace %s to version %d", database.getKeyspaceName(), database.getVersion()));
+        LOGGER.info("Migrated keyspace {} to version {}", database.getKeyspaceName(), database.getVersion());
     }
 
     private boolean databaseIsUpToDate() {

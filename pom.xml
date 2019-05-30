@@ -4,7 +4,7 @@
 
     <groupId>org.cognitor.cassandra</groupId>
     <artifactId>cassandra-migration-parent</artifactId>
-    <version>3.0.2-programisci</version>
+    <version>3.0.3-programisci</version>
     <packaging>pom</packaging>
     <name>Cassandra Migration Parent</name>
     <url>https://github.com/patka/cassandra-migration</url>

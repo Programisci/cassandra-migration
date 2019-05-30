@@ -215,8 +215,8 @@ public class Database implements Closeable {
      */
     public void execute(DbMigration migration) {
         notNull(migration, "migration");
-        LOGGER.debug(format("About to execute migration %s to version %d", migration.getScriptName(),
-                migration.getVersion()));
+        LOGGER.debug("About to execute migration {} to version {}", migration.getScriptName(),
+                migration.getVersion());
         SimpleCQLLexer lexer = new SimpleCQLLexer(migration.getMigrationScript());
         lexer.getCqlQueries().stream()
                 .map(String::trim)
@@ -224,8 +224,8 @@ public class Database implements Closeable {
                 .forEach(statement -> {
                     StatementResult result = executeStatement(statement);
                     if (statementResultHandler.isError(result)) {
-                        LOGGER.debug(format("'%s' decided that an error happened for statement '%s'",
-                                statementResultHandler.getClass().getName(), result.getStatement()));
+                        LOGGER.debug("'{}' decided that an error happened for statement '{}'",
+                                statementResultHandler.getClass().getName(), result.getStatement());
                         logMigration(migration, false);
                         statementResultHandler.handleError(result, migration);
                     } else {
@@ -233,8 +233,8 @@ public class Database implements Closeable {
                     }
                 });
         logMigration(migration, true);
-        LOGGER.debug(format("Successfully applied migration %s to version %d",
-                migration.getScriptName(), migration.getVersion()));
+        LOGGER.debug("Successfully applied migration {} to version {}",
+                migration.getScriptName(), migration.getVersion());
     }
 
     private StatementResult executeStatement(String statement) {
